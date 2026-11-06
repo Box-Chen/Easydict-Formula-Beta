@@ -27,6 +27,7 @@ struct PrivacyTab: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
+            #if !FORMULA_BETA
             Section {
                 HStack {
                     Text("crash_log")
@@ -37,6 +38,7 @@ struct PrivacyTab: View {
                     Toggle("allow_collect_analytics", isOn: $allowCollectAnalytics)
                 }
             }
+            #endif
         }
         .formStyle(.grouped)
     }

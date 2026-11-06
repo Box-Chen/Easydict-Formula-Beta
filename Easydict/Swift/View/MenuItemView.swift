@@ -55,16 +55,20 @@ struct MenuItemView: View {
             Divider()
 
             settingItem.keyboardShortcut(.init(","))
+            #if !FORMULA_BETA
             checkUpdateItem
+            #endif
             helpItem
 
             Divider()
 
             quitItem.keyboardShortcut(.init("q"))
         }
+        #if !FORMULA_BETA
         .task(id: includeBetaUpdates) {
             latestVersion = await GitHubReleaseFetcher.latestVersion(includePrerelease: includeBetaUpdates)
         }
+        #endif
     }
 
     // MARK: - Menu Items
@@ -90,7 +94,8 @@ struct MenuItemView: View {
     @Default(.includeBetaUpdates) private var includeBetaUpdates
 
     private var versionString: String {
-        let defaultLabel = "Easydict  \(currentVersion)"
+        let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Easydict"
+        let defaultLabel = "\(name)  \(currentVersion)"
         if let latestVersion, GitHubReleaseFetcher.isNewer(latestVersion, than: currentVersion) {
             return defaultLabel + "  (✨\(latestVersion) )"
         } else {

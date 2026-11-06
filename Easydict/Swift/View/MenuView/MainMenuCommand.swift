@@ -31,6 +31,7 @@ struct EasydictMainMenu: Commands {
             }
         }
 
+        #if !FORMULA_BETA
         // Check for updates
         CommandGroup(after: .appInfo, addition: {
             Button {
@@ -39,6 +40,7 @@ struct EasydictMainMenu: Commands {
                 Text("check_updates")
             }
         })
+        #endif
     }
 
     // MARK: Private

@@ -17,8 +17,13 @@ class GlobalContext: NSObject {
     private override init() {
         self.updaterHelper = SPUUpdaterHelper()
         self.userDriverHelper = SPUUserDriverHelper()
+        #if FORMULA_BETA
+        let startsUpdater = false
+        #else
+        let startsUpdater = true
+        #endif
         self.updaterController = SPUStandardUpdaterController(
-            startingUpdater: true,
+            startingUpdater: startsUpdater,
             updaterDelegate: updaterHelper,
             userDriverDelegate: userDriverHelper
         )

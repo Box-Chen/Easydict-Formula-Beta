@@ -140,6 +140,7 @@ struct GeneralTab: View {
                     }
                 }
 
+                #if !FORMULA_BETA
                 // Check for updates
                 HStack {
                     VStack(alignment: .leading, spacing: 8) {
@@ -178,6 +179,7 @@ struct GeneralTab: View {
                     }
                     .labelsHidden()
                 }
+                #endif
 
                 LaunchAtLogin.Toggle {
                     Text("launch_at_startup")
@@ -246,9 +248,11 @@ struct GeneralTab: View {
             }
         }
         .formStyle(.grouped)
+        #if !FORMULA_BETA
         .task(id: includeBetaUpdates) {
             lastestVersion = await GitHubReleaseFetcher.latestVersion(includePrerelease: includeBetaUpdates)
         }
+        #endif
         .alert("hide_menu_bar_icon", isPresented: $showRefuseAlert) {
             Button("ok") {
                 showRefuseAlert = false
@@ -277,7 +281,9 @@ struct GeneralTab: View {
     @State private var showRefuseAlert = false
     @State private var showHideMenuBarIconAlert = false
 
+    #if !FORMULA_BETA
     @StateObject private var checkUpdaterViewModel = CheckUpdaterViewModel()
+    #endif
 
     @State private var lastestVersion: String?
 

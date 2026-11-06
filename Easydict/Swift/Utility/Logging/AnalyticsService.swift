@@ -20,7 +20,7 @@ final class AnalyticsService: NSObject {
     /// Configures crash logging services in non-debug builds.
     @objc(setupCrashLogService)
     static func setupCrashService() {
-        #if !DEBUG
+        #if !DEBUG && !FORMULA_BETA
         configureFirebaseIfNeeded()
         SentrySDK.start { options in
             options.dsn = SecretKeyManager.keyValues["sentryDSN"]
@@ -33,7 +33,7 @@ final class AnalyticsService: NSObject {
 
     /// Enables or disables crash logging, and always disables it in debug builds.
     static func setCrashEnabled(_ enabled: Bool) {
-        #if DEBUG
+        #if DEBUG || FORMULA_BETA
         SentrySDK.close()
         #else
         if enabled {
@@ -54,7 +54,7 @@ final class AnalyticsService: NSObject {
             return
         }
 
-        #if !DEBUG
+        #if !DEBUG && !FORMULA_BETA
         Analytics.logEvent(name, parameters: parameters)
         #endif
     }
