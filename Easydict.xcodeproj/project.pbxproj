@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A6F40A102F00000100000001 /* ScreenshotKeyboardEventTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6F40A102F00000100000002 /* ScreenshotKeyboardEventTap.swift */; };
 		A73120261027000000000001 /* TranslationResultLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73120261027000000000002 /* TranslationResultLabel.swift */; };
 		A73120261023000000000001 /* LocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73120261023000000000002 /* LocalizationTests.swift */; };
 		02DEDC04202604300000007E /* MarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DEDC042026043000000002 /* MarkdownRenderer.swift */; };
@@ -485,7 +486,6 @@
 		1CC83D91B3954BE7894CC2C8 /* MDictReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA76B47A0150434485FCBBAD /* MDictReaderTests.swift */; };
 		24832952EE17407C852B2258 /* String+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24832951EE17407C852B2258 /* String+Convenience.swift */; };
 		24D3321DBBE84C798A32C595 /* ClaudeCodeServiceConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F42ADC9AAB3494D9E85B5D8 /* ClaudeCodeServiceConfigurationView.swift */; };
-		44E4918CB018468980EF16E0 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = ACD8C471534B4196BF8635AF /* SwiftMath */; };
 		2721E4D02AFE920700A059AC /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2721E4CF2AFE920700A059AC /* Alamofire */; };
 		2746AEC12AF95138005FE0A1 /* CaiyunService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2746AEC02AF95138005FE0A1 /* CaiyunService.swift */; };
 		276742082B3DC230002A2C75 /* PrivacyTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276742042B3DC230002A2C75 /* PrivacyTab.swift */; };
@@ -584,6 +584,10 @@
 		A9F10005B3C24D5E8A000005 /* MDictRIPEMD128.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F10005B3C24D5E8A000005 /* MDictRIPEMD128.swift */; };
 		A9F10006B3C24D5E8A000006 /* MDictKeyIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F10006B3C24D5E8A000006 /* MDictKeyIndex.swift */; };
 		AA0000012E00000000000001 /* QueryRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022E00000000000001 /* QueryRecord.swift */; };
+		AC2026102200000000001000 /* MarkdownBlockParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2026102200000000000000 /* MarkdownBlockParser.swift */; };
+		AC2026102200000000001001 /* MarkdownInlineRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2026102200000000000001 /* MarkdownInlineRenderer.swift */; };
+		AC2026102200000000001002 /* MarkdownMathRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2026102200000000000002 /* MarkdownMathRenderer.swift */; };
+		AC2026102200000000002000 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = AC2026102200000000002001 /* SwiftMath */; };
 		B11F773A639D431BB1D320F3 /* AppPathManager+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE8364C45FA492183DC4477 /* AppPathManager+Cache.swift */; };
 		B4D8B2EE2F9E1D8D0088A304 /* EZWindowPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = B4D8B2ED2F9E1D8D0088A304 /* EZWindowPatch.m */; };
 		B87AC7E36367075BA5D13234 /* Pods_Easydict.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6372B33DFF803C7096A82250 /* Pods_Easydict.framework */; };
@@ -689,6 +693,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A6F40A102F00000100000002 /* ScreenshotKeyboardEventTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotKeyboardEventTap.swift; sourceTree = "<group>"; };
 		A73120261027000000000002 /* TranslationResultLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationResultLabel.swift; sourceTree = "<group>"; };
 		A73120261023000000000002 /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		003F53EF2A8C452998524A99 /* UtilityFunctionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityFunctionsTests.swift; sourceTree = "<group>"; };
@@ -1364,6 +1369,9 @@
 		A6C26D557A3746598059449DAD170FE1 /* OrderedDictionary+Variadic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "OrderedDictionary+Variadic.m"; sourceTree = "<group>"; };
 		A77009152026000000000002 /* AppPathMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPathMigration.swift; sourceTree = "<group>"; };
 		AA0000022E00000000000001 /* QueryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryRecord.swift; sourceTree = "<group>"; };
+		AC2026102200000000000000 /* MarkdownBlockParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownBlockParser.swift; sourceTree = "<group>"; };
+		AC2026102200000000000001 /* MarkdownInlineRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownInlineRenderer.swift; sourceTree = "<group>"; };
+		AC2026102200000000000002 /* MarkdownMathRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownMathRenderer.swift; sourceTree = "<group>"; };
 		AEF157E4DBC341E1BC49A9C6 /* ClaudeCodeCLIRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeCodeCLIRunnerTests.swift; sourceTree = "<group>"; };
 		B4D8B2EC2F9E1D880088A304 /* EZWindowPatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EZWindowPatch.h; sourceTree = "<group>"; };
 		B4D8B2ED2F9E1D8D0088A304 /* EZWindowPatch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EZWindowPatch.m; sourceTree = "<group>"; };
@@ -1465,8 +1473,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC2026102200000000002000 /* SwiftMath in Frameworks */,
 				0AC8A84F2B6DFDD4006DA5CC /* SettingsAccess in Frameworks */,
-				44E4918CB018468980EF16E0 /* SwiftMath in Frameworks */,
 				2721E4D02AFE920700A059AC /* Alamofire in Frameworks */,
 				038030952B4106800009230C /* CocoaLumberjack in Frameworks */,
 				03FD68BB2B1DC59600FD388E /* CryptoSwift in Frameworks */,
@@ -1510,6 +1518,9 @@
 			isa = PBXGroup;
 			children = (
 				02DEDC042026043000000002 /* MarkdownRenderer.swift */,
+				AC2026102200000000000002 /* MarkdownMathRenderer.swift */,
+				AC2026102200000000000001 /* MarkdownInlineRenderer.swift */,
+				AC2026102200000000000000 /* MarkdownBlockParser.swift */,
 				02DEDC042026043000000003 /* MarkdownLabel.swift */,
 				A73120261027000000000002 /* TranslationResultLabel.swift */,
 				02DEDC042026043000000004 /* MarkdownToggleButton.swift */,
@@ -2034,6 +2045,7 @@
 			children = (
 				03D9D6FC2D8C0DA6009E0CEC /* Screenshot.swift */,
 				03D9D6FA2D8C0D38009E0CEC /* Screenshot+EventMonitor.swift */,
+				A6F40A102F00000100000002 /* ScreenshotKeyboardEventTap.swift */,
 				03CF2F742D87CF68006DC7E1 /* Screenshot+UserDefaults.swift */,
 				03D9D6F62D8AB0C8009E0CEC /* ScreenshotState.swift */,
 				03675A2B2D7FE598004E780A /* ScreenshotOverlayView.swift */,
@@ -4038,7 +4050,7 @@
 			);
 			name = Easydict;
 			packageProductDependencies = (
-				ACD8C471534B4196BF8635AF /* SwiftMath */,
+				AC2026102200000000002001 /* SwiftMath */,
 				2721E4CF2AFE920700A059AC /* Alamofire */,
 				03FD68BA2B1DC59600FD388E /* CryptoSwift */,
 				03022F1B2B35DEBA00B63209 /* Hue */,
@@ -4104,7 +4116,7 @@
 			);
 			mainGroup = C99EEB0F2385796700FEE666;
 			packageReferences = (
-				908D6E8123CA47A5904EF413 /* XCRemoteSwiftPackageReference "SwiftMath" */,
+				AC2026102200000000002002 /* XCRemoteSwiftPackageReference "SwiftMath" */,
 				2721E4CE2AFE920700A059AC /* XCRemoteSwiftPackageReference "Alamofire" */,
 				03FD68B92B1DC59600FD388E /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				03022F1A2B35DEBA00B63209 /* XCRemoteSwiftPackageReference "Hue" */,
@@ -4513,6 +4525,9 @@
 				031C66E02EDB00010025D190 /* DictionaryHTMLRenderer.swift in Sources */,
 				B8D793EA87784E0B9D82C7FC /* MDictConfigurationView.swift in Sources */,
 				02DEDC04202604300000007E /* MarkdownRenderer.swift in Sources */,
+				AC2026102200000000001002 /* MarkdownMathRenderer.swift in Sources */,
+				AC2026102200000000001001 /* MarkdownInlineRenderer.swift in Sources */,
+				AC2026102200000000001000 /* MarkdownBlockParser.swift in Sources */,
 				02DEDC04202604300000008E /* MarkdownLabel.swift in Sources */,
 				A73120261027000000000001 /* TranslationResultLabel.swift in Sources */,
 				02DEDC04202604300000009E /* MarkdownToggleButton.swift in Sources */,
@@ -4720,6 +4735,7 @@
 				03542A342936F70F00C34C33 /* EZLanguageManager.m in Sources */,
 				0364636A2CB62B8900D0D6CC /* AppleService.swift in Sources */,
 				03D9D6FB2D8C0D38009E0CEC /* Screenshot+EventMonitor.swift in Sources */,
+				A6F40A102F00000100000001 /* ScreenshotKeyboardEventTap.swift in Sources */,
 				B4D8B2EE2F9E1D8D0088A304 /* EZWindowPatch.m in Sources */,
 				0361967B2A0037F700806370 /* NSData+EZMD5.m in Sources */,
 				033821292F0EB9560087A361 /* AppBundleIDs.swift in Sources */,
@@ -5181,7 +5197,7 @@
 				CODE_SIGN_STYLE = $CODE_SIGN_STYLE;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 69;
+				CURRENT_PROJECT_VERSION = 70;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
@@ -5200,7 +5216,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 2.26.0;
+				MARKETING_VERSION = 2.27.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.izual.Easydict-debug";
 				PRODUCT_MODULE_NAME = Easydict;
 				PRODUCT_NAME = "Easydict-debug";
@@ -5228,7 +5244,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 69;
+				CURRENT_PROJECT_VERSION = 70;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
@@ -5247,7 +5263,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 2.26.0;
+				MARKETING_VERSION = 2.27.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.boxchen.easydict.formulabeta;
 				PRODUCT_MODULE_NAME = Easydict;
 				PRODUCT_NAME = "Easydict Formula Beta";
@@ -5294,6 +5310,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		AC2026102200000000002002 /* XCRemoteSwiftPackageReference "SwiftMath" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mgriebling/SwiftMath.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.3;
+			};
+		};
 		03022F1A2B35DEBA00B63209 /* XCRemoteSwiftPackageReference "Hue" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/zenangst/Hue";
@@ -5478,17 +5502,14 @@
 				minimumVersion = 8.2.0;
 			};
 		};
-		908D6E8123CA47A5904EF413 /* XCRemoteSwiftPackageReference "SwiftMath" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mgriebling/SwiftMath.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.7.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AC2026102200000000002001 /* SwiftMath */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC2026102200000000002002 /* XCRemoteSwiftPackageReference "SwiftMath" */;
+			productName = SwiftMath;
+		};
 		03022F1B2B35DEBA00B63209 /* Hue */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 03022F1A2B35DEBA00B63209 /* XCRemoteSwiftPackageReference "Hue" */;
@@ -5603,11 +5624,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EA3B81FA2B52555C004C0E8B /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
-		};
-		ACD8C471534B4196BF8635AF /* SwiftMath */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 908D6E8123CA47A5904EF413 /* XCRemoteSwiftPackageReference "SwiftMath" */;
-			productName = SwiftMath;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

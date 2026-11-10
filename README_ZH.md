@@ -4,7 +4,7 @@
 
 这是由 [Box-Chen](https://github.com/Box-Chen) 提供的非官方 Beta，仅在 [上游 PR #1391](https://github.com/tisfeng/Easydict/pull/1391) 等待审查及发布期间，供有需要的用户提前体验。等原作者发布包含这些新增功能的正式版本后，我们会关闭 Beta 下载并删除本临时仓库。日常使用可前往 [Easydict 官方发布页](https://github.com/tisfeng/Easydict/releases)。
 
-**[下载 macOS Beta](https://github.com/Box-Chen/Easydict-Formula-Beta/releases/tag/v2.26.0-formula-beta.1)** · [对应源码](https://github.com/Box-Chen/Easydict-Formula-Beta/tree/v2.26.0-formula-beta.1) · [GPL-3.0 许可证](./LICENSE)
+**[下载 macOS Beta](https://github.com/Box-Chen/Easydict-Formula-Beta/releases/tag/v2.27.0-formula-beta.1)** · [对应源码](https://github.com/Box-Chen/Easydict-Formula-Beta/tree/v2.27.0-formula-beta.1) · [GPL-3.0 许可证](./LICENSE)
 
 应用最低目标为 macOS 13。公式模式还需要适用于该系统的本机 Codex CLI。下载 Release 里的 ZIP，解压后打开 **Easydict Formula Beta.app**。它使用独立的应用标识，可以与官方 Easydict 并存。此包采用临时签名，未经 Apple 公证，macOS 可能拦截首次打开。也可以从同一版本的源码自行编译。[Apple 的打开提示说明](https://support.apple.com/102445)
 

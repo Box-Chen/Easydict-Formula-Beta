@@ -460,6 +460,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     EZQueryModel *model = [[EZQueryModel alloc] init];
     model.userSourceLanguage = MyConfiguration.shared.fromLanguage;
     model.userTargetLanguage = MyConfiguration.shared.toLanguage;
+    model.queryViewHeight = [self miniQueryViewHeight];
 
     self.queryModel = model;
     self.detectManager = [EZDetectManager managerWithModel:model];
@@ -490,9 +491,13 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
         return;
     }
 
+    [self.queryView startLoadingAnimation:NO];
+    if (![actionType isEqualToString:EZActionTypeOCRQuery] && ![actionType isEqualToString:EZActionTypePasteboardOCR]) {
+        self.queryModel.ocrImage = nil;
+    }
     [self restoreNormalServices];
     self.inputText = text;
-    self.queryModel.actionType = actionType == EZActionTypeFormulaScreenshot ? EZActionTypeInputQuery : actionType;
+    self.queryModel.actionType = [actionType isEqualToString:EZActionTypeFormulaScreenshot] ? EZActionTypeInputQuery : actionType;
     self.queryView.isTypingChinese = NO;
 
     if ([self handleEasydictScheme:text]) {
@@ -546,13 +551,18 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     MMLogInfo(@"start OCR Image: %@, actionType: %@", @(image.size), actionType);
     MMLogInfo(@"ocr language: %@", self.queryModel.queryFromLanguage);
 
+    BOOL isFormula = [actionType isEqualToString:EZActionTypeFormulaScreenshot];
+    BOOL isFormulaRetry = isFormula && [self.queryModel.actionType isEqualToString:actionType]
+        && self.queryModel.ocrImage == image;
+    EZLanguage detectedLanguage = isFormulaRetry ? self.queryModel.detectedLanguage : EZLanguageAuto;
     self.queryModel.actionType = actionType;
     self.queryModel.ocrImage = image;
 
-    if (actionType == EZActionTypeFormulaScreenshot) {
+    if (isFormula) {
         [self.queryModel stopAllService];
         [self.queryView startLoadingAnimation:NO];
         self.inputText = @"";
+        self.queryModel.detectedLanguage = detectedLanguage;
 
         EZQueryService *service = [EZCodexCLIService makeFormulaScreenshotService];
         [self resetService:service];
@@ -560,6 +570,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
         self.services = @[ service ];
         self.serviceTypeIds = @[ service.serviceTypeWithUniqueIdentifier ];
         self.firstService = service;
+        [self autoCopyTranslatedTextOfService:service];
         [self.tableView reloadData];
         [self queryWithModel:self.queryModel service:service];
         return;
@@ -573,6 +584,11 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     mm_weakify(self);
     [self.detectManager ocrAndDetectTextWithCompletion:^(EZQueryModel *_Nonnull queryModel, NSError *_Nullable error) {
         mm_strongify(self);
+        if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == NSUserCancelledError) {
+            [self.queryView startLoadingAnimation:NO];
+            return;
+        }
+
         // !!!: inputText should be used here, not queryText, queryText may be modified, such as easydict://query?text=xxx
         NSString *inputText = queryModel.inputText;
         if (saveOCRLocally && MyConfiguration.shared.localAutoSave && inputText.length && !error) {
@@ -595,7 +611,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
             return;
         }
 
-        if (actionType == EZActionTypeScreenshotOCR) {
+        if ([actionType isEqualToString:EZActionTypeScreenshotOCR]) {
             [inputText copyToPasteboard];
 
             dispatch_block_on_main_safely(^{
@@ -606,7 +622,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
         }
 
 
-        if (actionType != EZActionTypeScreenshotOCR) {
+        if (![actionType isEqualToString:EZActionTypeScreenshotOCR]) {
             [self.queryView startLoadingAnimation:NO];
 
             self.inputText = inputText;
@@ -647,7 +663,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     }
 
     // If has designated language, we don't need to detect language again.
-    if (language == EZLanguageAuto) {
+    if ([language isEqualToString:EZLanguageAuto]) {
         self.queryModel.detectedLanguage = EZLanguageAuto;
         self.queryModel.needDetectLanguage = YES;
     } else {
@@ -679,6 +695,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
 }
 
 - (void)clearInput {
+    [self.queryView startLoadingAnimation:NO];
     // Clear query text, detect language and clear button right now;
     self.queryModel.ocrImage = nil;
     self.inputText = @"";
@@ -775,7 +792,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     }
 
     void (^playAudioBlock)(void) = ^{
-        NSString *queryText = self.queryText;
+        NSString *queryText = self.queryModel.screenshotSourceMarkdown ?: self.queryText;
         NSString *textLanguage = self.queryModel.queryFromLanguage;
         BOOL isEnglishWord = [queryText isEnglishWordWithLanguage:textLanguage];
 
@@ -794,7 +811,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     };
 
     // Before playing audio, we should detect the query text language.
-    if (self.queryModel.hasQueryFromLanguage) {
+    if (self.queryModel.hasQueryFromLanguage || self.queryModel.screenshotSourceMarkdown.length) {
         playAudioBlock();
     } else {
         [self detectQueryText:^(NSString *_Nonnull language) {
@@ -855,8 +872,9 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
 - (void)startQueryWithType:(EZActionType)actionType {
     NSImage *ocrImage = self.queryModel.ocrImage;
 
-    if (ocrImage && (actionType == EZActionTypeOCRQuery || actionType == EZActionTypePasteboardOCR
-                     || actionType == EZActionTypeFormulaScreenshot)) {
+    if (ocrImage && ([actionType isEqualToString:EZActionTypeOCRQuery]
+                     || [actionType isEqualToString:EZActionTypePasteboardOCR]
+                     || [actionType isEqualToString:EZActionTypeFormulaScreenshot])) {
         BOOL autoQuery = self.config.autoCopyOCRText || self.config.autoQueryPastedText || self.queryModel.autoQuery;
         [self startOCRImage:ocrImage actionType:actionType autoQuery:autoQuery];
     } else {
@@ -922,7 +940,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
 
 - (void)queryWithModel:(EZQueryModel *)queryModel service:(EZQueryService *)service {
     NSString *queryText = [queryModel.queryText copy];
-    NSImage *screenshot = queryModel.actionType == EZActionTypeFormulaScreenshot ? queryModel.ocrImage : nil;
+    NSImage *screenshot = [queryModel.actionType isEqualToString:EZActionTypeFormulaScreenshot] ? queryModel.ocrImage : nil;
     BOOL saveLocally = MyConfiguration.shared.localAutoSave;
     [self queryWithModel:queryModel service:service completion:^(EZQueryResult *result, NSError *_Nullable error) {
         if (error) {
@@ -935,6 +953,9 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
             && queryModel.inputText.length == 0
             && ![queryModel.screenshotSourceMarkdown isEqualToString:result.screenshotSourceMarkdown]) {
             queryModel.screenshotSourceMarkdown = result.screenshotSourceMarkdown;
+            queryModel.detectedLanguage = result.from;
+            queryModel.screenshotTargetLanguage = result.to;
+            queryModel.showAutoLanguage = YES;
             [self updateQueryViewModelAndDetectedLanguage:queryModel];
         }
 
@@ -958,8 +979,8 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
                 && result.translatedText.length) {
                 if (screenshot && queryModel.ocrImage == screenshot && result.screenshotSourceMarkdown.length) {
                     [QueryRecordManager.shared addRecordWithQueryText:result.screenshotSourceMarkdown
-                                                         fromLanguage:queryModel.queryFromLanguage
-                                                           toLanguage:queryModel.queryTargetLanguage
+                                                         fromLanguage:result.from
+                                                           toLanguage:result.to
                                                      translatedResult:result.translatedText
                                                                    to:RecordTypeHistory];
                 } else if (queryText.length) {
@@ -997,7 +1018,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
         MMLogWarn(@"service disabled: %@", service.serviceTypeWithUniqueIdentifier);
         return;
     }
-    BOOL translatesScreenshot = queryModel.actionType == EZActionTypeFormulaScreenshot && queryModel.ocrImage
+    BOOL translatesScreenshot = [queryModel.actionType isEqualToString:EZActionTypeFormulaScreenshot] && queryModel.ocrImage
         && self.showingFormulaScreenshot && service == self.firstService;
     if (self.showingFormulaScreenshot && !translatesScreenshot) {
         return;
@@ -1085,7 +1106,9 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
     CGFloat height;
 
     if ([self isInputFieldCellAtRow:row]) {
-        height = self.queryModel.queryViewHeight;
+        CGFloat queryViewHeight = self.queryModel.queryViewHeight;
+        CGFloat minimumHeight = [self miniQueryViewHeight];
+        height = isfinite(queryViewHeight) ? MAX(queryViewHeight, minimumHeight) : minimumHeight;
     } else if ([self isSelectLanguageCellAtRow:row]) {
         height = 35;
     } else {
@@ -1384,6 +1407,7 @@ static BOOL ez_frame_equal_with_tolerance(CGRect lhs, CGRect rhs, CGFloat tolera
 }
 
 - (void)resetQueryAndResults {
+    [self.queryView startLoadingAnimation:NO];
     [self restoreNormalServices];
     [self resetAllResults];
 

@@ -69,10 +69,10 @@ final class CodexCLIService: StreamService {
         return (source.isEmpty ? nil : source, translation)
     }
 
-    private func screenshotPrompt(from: Language, to: Language) -> String {
+    private func screenshotPrompt(to: Language, alternateTarget: Language?) -> String {
         var targetInstruction = "Translate its visible prose into \(to.queryLanguageName)."
-        if from == .auto, !queryModel.hasUserTargetLanguage {
-            let second = MyConfiguration.shared.secondLanguage.queryLanguageName
+        if let alternateTarget {
+            let second = alternateTarget.queryLanguageName
             targetInstruction += " If it is already in \(to.queryLanguageName), translate into \(second) instead."
         }
         return """
@@ -92,17 +92,19 @@ final class CodexCLIService: StreamService {
     }
 
     private static func screenshotDataURL(_ image: NSImage) throws -> String {
-        guard let cgImage = image.toCGImage() else { throw CodexManagedError.invalidResponse }
+        guard let cgImage = image.toCGImage() else { throw CodexCLIError.screenshotEncodingFailed }
         let bitmap = NSBitmapImageRep(cgImage: cgImage)
         let maximumBytes = 10 * 1024 * 1024
-        if let png = bitmap.representation(using: .png, properties: [:]), png.count <= maximumBytes {
+        let png = bitmap.representation(using: .png, properties: [:])
+        if let png, png.count <= maximumBytes {
             return "data:image/png;base64," + png.base64EncodedString()
         }
-        if let jpeg = bitmap.representation(using: .jpeg, properties: [.compressionFactor: 0.94]),
-           jpeg.count <= maximumBytes {
+        let jpeg = bitmap.representation(using: .jpeg, properties: [.compressionFactor: 0.94])
+        if let jpeg, jpeg.count <= maximumBytes {
             return "data:image/jpeg;base64," + jpeg.base64EncodedString()
         }
-        throw CodexManagedError.invalidResponse
+        if png == nil, jpeg == nil { throw CodexCLIError.screenshotEncodingFailed }
+        throw CodexCLIError.screenshotTooLarge
     }
 
     // MARK: Public
@@ -167,9 +169,11 @@ final class CodexCLIService: StreamService {
     )
         -> AsyncThrowingStream<String, Error> {
         let screenshot = queryModel.actionType == .formulaScreenshot ? queryModel.ocrImage : nil
+        let alternateTarget: Language? = screenshot != nil && from == .auto && !queryModel.hasUserTargetLanguage
+            ? EZLanguageManager.shared().userTargetLanguage(withSourceLanguage: to) : nil
         let combinedPrompt: String
         if screenshot != nil {
-            combinedPrompt = screenshotPrompt(from: from, to: to)
+            combinedPrompt = screenshotPrompt(to: to, alternateTarget: alternateTarget)
         } else {
             let queryType = queryType(text: text, from: from, to: to)
             let chatQueryParam = ChatQueryParam(
@@ -272,6 +276,10 @@ final class CodexCLIService: StreamService {
                             if screenshot != nil {
                                 let sections = Self.screenshotSections(result.text)
                                 self.result?.screenshotSourceMarkdown = sections.source
+                                let sourceLanguage = from == .auto
+                                    ? AppleLanguageDetector().detectLanguage(text: sections.source ?? "") : from
+                                self.result?.from = sourceLanguage
+                                self.result?.to = sourceLanguage == to ? alternateTarget ?? to : to
                                 guard !sections.translation.isEmpty else { throw CodexManagedError.invalidResponse }
                                 continuation.yield(sections.translation)
                             }
@@ -333,7 +341,8 @@ final class CodexCLIService: StreamService {
 
         let requiresImages = isFormulaScreenshotService
         Task {
-            let catalog = try? await CodexManagedAppServer.local.localModelList()
+            let server = requiresImages ? CodexManagedAppServer.local : CodexManagedAppServer.localCatalog
+            let catalog = try? await server.localModelList()
             guard CodexServiceConfiguration(uuid: uuid).mode == configuration.mode else {
                 completion([], false)
                 return
@@ -364,8 +373,13 @@ final class CodexCLIService: StreamService {
             else { return }
         }
         let effortKey = CodexServiceConfiguration.effortKey(uuid: uuid, mode: mode)
-        if Defaults[effortKey] != effort { Defaults[effortKey] = effort }
-        if model != identifier { model = identifier }
+        let effortChanged = Defaults[effortKey] != effort
+        if effortChanged { Defaults[effortKey] = effort }
+        if model != identifier {
+            model = identifier
+        } else if effortChanged {
+            notifyServiceConfigurationChanged(autoQuery: true)
+        }
     }
 
     @MainActor override var selectableModels: [String] {
